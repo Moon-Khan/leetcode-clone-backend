@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "Node16",
-    "rootDir": "./src",
+    "module": "NodeNext",
+    "rootDir": ".",
     "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
-    "moduleResolution": "Node16",
+    "moduleResolution": "NodeNext",
     "skipLibCheck": true
   }
 }
