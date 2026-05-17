@@ -13,6 +13,121 @@ model User {
   email        String   @unique
   passwordHash String
 
+  submissions     Submission[]
+  problemStatuses UserProblemStatus[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+model Problem {
+  id          String     @id @default(uuid())
+  title       String
+  slug        String     @unique
+  description String
+  constraints String?
+  examples    Json?
+
+  difficulty Difficulty
+
+  testCases       TestCase[]
+  submissions     Submission[]
+  tags            ProblemTag[]
+  problemStatuses UserProblemStatus[]
+
+  createdAt DateTime @default(now())
+}
+
+model TestCase {
+  id String @id @default(uuid())
+
+  problemId String
+  problem   Problem @relation(fields: [problemId], references: [id])
+
+  input          String
+  expectedOutput String
+
+  isHidden Boolean @default(true)
+}
+
+enum SubmissionStatus {
+  PENDING
+  PROCESSING
+  ACCEPTED
+  WRONG_ANSWER
+  TIME_LIMIT_EXCEEDED
+  RUNTIME_ERROR
+  COMPILATION_ERROR
+}
+
+model Submission {
+  id String @id @default(uuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  problemId String
+  problem   Problem @relation(fields: [problemId], references: [id])
+
+  languageId String
+  language   Language @relation(fields: [languageId], references: [id])
+
+  sourceCode String
+
+  status SubmissionStatus @default(PENDING)
+
+  runtimeMs Int?
+  memoryKb  Int?
+
+  passedCount Int?
+  totalCount  Int?
+
+  createdAt DateTime @default(now())
+}
+
+model Language {
+  id      String  @id @default(uuid())
+  name    String  @unique
+  version String?
+
+  submissions Submission[]
+}
+
+model Tag {
+  id       String       @id @default(uuid())
+  name     String       @unique
+  problems ProblemTag[]
+}
+
+model ProblemTag {
+  problemId String
+  tagId     String
+  problem   Problem @relation(fields: [problemId], references: [id])
+  tag       Tag     @relation(fields: [tagId], references: [id])
+
+  @@id([problemId, tagId])
+}
+
+enum SolveStatus {
+  ATTEMPTED
+  SOLVED
+}
+
+model UserProblemStatus {
+  userId    String
+  problemId String
+  status    SolveStatus
+
+  user    User    @relation(fields: [userId], references: [id])
+  problem Problem @relation(fields: [problemId], references: [id])
+
+  updatedAt DateTime @updatedAt
+
+  @@id([userId, problemId])
 }
