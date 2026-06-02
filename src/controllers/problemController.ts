@@ -16,5 +16,48 @@ class problemController extends BaseController {
         }
        
     }
+    async getAllProblems(req: Request, res: Response){
+        try{
+            const problems = await problemService.getAllProblems();
+            this.success(res, "Problems fetched successfully", problems);
+        }catch(error){
+            const message = error instanceof Error ? error.message : "Problem fetching failed";
+            this.error(res, message);
+        }
+    }
+
+    async getProblemById(req: Request, res: Response){
+        try{
+            const id = req.params.id as string;
+            const problem = await problemService.getProblemById(id);
+            this.success(res, "Problem fetched successfully", problem);
+        }catch(error){
+            const message = error instanceof Error ? error.message : "Problem fetching failed";
+            this.error(res, message);
+        }
+    }
+
+    async updateProblem(req: Request, res: Response){
+        try{
+            const id = req.params.id as string;
+            const { title, description, constraints, difficulty, examples } = req.body;
+            const problem = await problemService.updateProblem(id, { title, description, constraints, difficulty, examples });
+            this.success(res, "Problem updated successfully", problem);
+        }catch(error){
+            const message = error instanceof Error ? error.message : "Problem update failed";
+            this.error(res, message);
+        }
+    }
+
+    async deleteProblem(req: Request, res: Response){
+        try{
+            const id = req.params.id as string;
+            await problemService.deleteProblem(id);
+            this.success(res, "Problem deleted successfully");
+        }catch(error){
+            const message = error instanceof Error ? error.message : "Problem deletion failed";
+            this.error(res, message);
+        }
+    }
 }
 export default new problemController();
